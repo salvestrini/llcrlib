@@ -160,7 +160,7 @@ typedef struct rib_obj{
 	char* name;
 	
 	/* Class type */
-	char class_name[RIB_MAX_CLASS_NAME];	
+	char class_name[RIB_MAX_CLASS_NAME];
 
 	/* Operations */
 	rib_obj_ops_t ops;

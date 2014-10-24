@@ -5,6 +5,7 @@
 
 #include <inttypes.h>
 #include <stdbool.h>
+#include "utils.h"
 
 /**
 * @file rib.h
@@ -22,7 +23,7 @@
 /**
 * Maximum object class name
 */
-#define RIB_MAX_CLASS_NAME 32;
+#define RIB_MAX_CLASS_NAME 32
 
 /**
 * RIB library result codes
@@ -70,7 +71,7 @@ typedef struct rib_ver_bitmap{
 	/* Supported */
 	rib_ver_t __supported[RIB_VER_BM_MAX_SUPPORTED];
 }rib_ver_bitmap_t;
-COMPILATION_ASSERT(RIB_VER_BM_SIZE, ( sizeof(rib_ver_t) == 132 ) );
+COMPILATION_ASSERT(RIB_VER_BM_SIZE, ( sizeof(rib_ver_bitmap_t) == 132 ) );
 
 
 /**

@@ -14,6 +14,9 @@
 * @brief Resource Information Base(RIB) management
 */
 
+//TODO: remove this when this type is defined
+typedef uint64_t cdap_ae_handle_t;
+
 /**
 * @brief RIB 
 */
@@ -27,7 +30,7 @@ typedef struct rib{
 
 #define RIB_MAX_AES 128
 	/* Application entities exposing this RIB */ 
-	aes[RIB_MAX_NAME];
+	cdap_ae_handle_t aes[RIB_MAX_AES];
 
 	/* RIB version */
 	rib_ver_t version;
