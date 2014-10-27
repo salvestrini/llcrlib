@@ -11,11 +11,8 @@
 * @file rib_mgmt.h
 * @author Marc Sune<marc.sune (at) bisdn.de>
 *
-* @brief Resource Information Base(RIB) management
+* @brief Local Resource Information Base(RIB) management
 */
-
-//TODO: remove this when this type is defined
-typedef uint64_t cdap_ae_handle_t;
 
 /**
 * @brief RIB 

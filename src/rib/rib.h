@@ -18,7 +18,8 @@
 //
 // Data types
 //
-
+//TODO: remove this when this type is defined
+typedef uint64_t cdap_ae_handle_t;
 
 /**
 * Maximum object class name
@@ -38,6 +39,10 @@ typedef enum rib_res{
 
 	/* General error */
 	RIB_UNKOWN_ERROR = -1,
+
+	/* There is no supported RIB version that can be understood */	
+	RIB_VER_MISMATCH_ERR = -2,
+	
 	
 	//TODO: Other error codes
 }rib_res_t;
@@ -63,15 +68,15 @@ COMPILATION_ASSERT(RIB_VER_SIZE, ( sizeof(rib_ver_t) == 8 ) );
 /**
 * Supported RIB versions bitmap
 */
-typedef struct rib_ver_bitmap{
+typedef struct rib_ver_set{
 	/* Number of versions */
 	unsigned int num_of_supported_vers;
 	
 #define RIB_VER_BM_MAX_SUPPORTED 16
 	/* Supported */
 	rib_ver_t __supported[RIB_VER_BM_MAX_SUPPORTED];
-}rib_ver_bitmap_t;
-COMPILATION_ASSERT(RIB_VER_BM_SIZE, ( sizeof(rib_ver_bitmap_t) == 132 ) );
+}rib_ver_set_t;
+COMPILATION_ASSERT(RIB_VER_BM_SIZE, ( sizeof(rib_ver_set_t) == 132 ) );
 
 
 /**
@@ -87,7 +92,7 @@ typedef enum rib_op{
 }rib_op_t;
 
 /**
-* @brief RIB handle 
+* @brief Local RIB handle 
 */
 typedef uint64_t rib_handle_t;
 
@@ -105,22 +110,22 @@ RIB_BEGIN_DECLS
 /**
 * Initialize supported RIB versions bitmap
 */
-void rib_ver_bitmap_init(rib_ver_bitmap_t* bitmap);
+void rib_ver_set_init(rib_ver_set_t* bitmap);
 
 /**
 * Add version to bitmap 
 */
-void rib_ver_bitmap_add(rib_ver_bitmap_t* bitmap, const rib_ver_t* version); 
+void rib_ver_set_add(rib_ver_set_t* bitmap, const rib_ver_t* version); 
 
 /**
 * Remove version from bitmap 
 */
-void rib_ver_bitmap_remove(rib_ver_bitmap_t* bitmap, const rib_ver_t* version); 
+void rib_ver_set_remove(rib_ver_set_t* bitmap, const rib_ver_t* version); 
 
 /**
 * Is the version supported
 */
-bool rib_ver_bitmap_is_supported(const rib_ver_bitmap_t* bitmap, 
+bool rib_ver_set_is_supported(const rib_ver_set_t* bitmap, 
 					const rib_ver_t* version); 
 
 

@@ -293,18 +293,37 @@ static void setup_aes(){
 
 }
 
+void perform_remote_ops(void){
+
+	/**
+	* Stablish a simple CDAP connection 
+	*/
+	rib_simple_connect(REMOTE_AP_NAME, NULL);
+}
+
+void wait_remote_perform_ops(){
+
+}
+
 /*
 * An example of an application publishing a RIB
 */
 int main(int argc, char** argv){
 
 	/*
-	* Set up application entities
+	* Set up application entities RIBs
 	*/ 
+	setup_aes();
 
 	/**
-	* Clients
+	* Client (starts a CDAP dialogue)
 	*/
+	perform_remote_ops();
+	
+	/**
+	* Client (waits for CDAP peer to start the dialogue)
+	*/
+	wait_remote_perform_ops();
 	
 	return EXIT_SUCCESS;	
 }
