@@ -179,7 +179,7 @@ typedef struct rib_obj{
 //
 
 //extern C
-RIB_BEGIN_DECLS
+BEGIN_DECLS
 
 //
 // RIB objects
@@ -199,6 +199,6 @@ uint64_t rib_obj_get_inst_id(rib_handle_t handle,
 
 
 //extern C 
-RIB_END_DECLS
+END_DECLS
 
 #endif // RIB_OBJ_H_ 

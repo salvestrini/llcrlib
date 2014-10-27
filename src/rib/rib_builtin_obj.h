@@ -53,7 +53,4 @@ typedef enum __rib_obj_builtin_types{
 	RIB_OBJ_BUF_T		= 11	
 }__rib_obj_builtin_types_t;
 
-//extern C 
-RIB_END_DECLS
-
 #endif // RIB_BUILTIN_T_H_ 

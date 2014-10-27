@@ -20,11 +20,11 @@
 * Extern C wrappings
 */
 #ifdef __cplusplus
-	# define RIB_BEGIN_DECLS extern "C" {
-	# define RIB_END_DECLS   }
+	# define BEGIN_DECLS extern "C" {
+	# define END_DECLS   }
 #else
-	# define RIB_BEGIN_DECLS
-	# define RIB_END_DECLS
+	# define BEGIN_DECLS
+	# define END_DECLS
 #endif //__cplusplus
 
 #endif // UTILS_H_ 

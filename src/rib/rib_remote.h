@@ -23,7 +23,7 @@
 //
 
 //extern C
-RIB_BEGIN_DECLS
+BEGIN_DECLS
 
 //
 // Connection handler 
@@ -117,6 +117,6 @@ rib_res_t rib_remote_close(rib_rcon_handle_t** handle);
 
 
 //extern C 
-RIB_END_DECLS
+END_DECLS
 
 #endif // RIB_REMOTE_H_ 

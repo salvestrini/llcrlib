@@ -65,7 +65,7 @@ typedef struct rib_rcon_handle{
 //
 
 //extern C
-RIB_BEGIN_DECLS
+BEGIN_DECLS
 
 /**
 * @brief Set callback non-blocking open callback completed 
@@ -83,6 +83,6 @@ rib_res_t rib_remote_set_open_cb(const rib_rcon_handle_t* handle, /*TODO*/);
 rib_res_t rib_remote_set_close_cb(const rib_rcon_handle_t* handle,/* TODO */);
 
 //extern C 
-RIB_END_DECLS
+END_DECLS
 
 #endif // RIB_CONN_H_ 

@@ -5,7 +5,7 @@
 
 #include <inttypes.h>
 #include <stdbool.h>
-#include "utils.h"
+#include "../utils.h"
 
 /**
 * @file rib.h
@@ -101,7 +101,7 @@ typedef uint64_t rib_handle_t;
 //
 
 //extern C
-RIB_BEGIN_DECLS
+BEGIN_DECLS
 
 //
 // Version bitmap
@@ -130,6 +130,6 @@ bool rib_ver_set_is_supported(const rib_ver_set_t* bitmap,
 
 
 //extern C 
-RIB_END_DECLS
+END_DECLS
 
 #endif // RIB_H_ 

@@ -43,7 +43,7 @@ COMPILATION_ASSERT(RIB_SIZE, ( sizeof(rib_ver_t) == 8 ) );
 //
 
 //extern C
-RIB_BEGIN_DECLS
+BEGIN_DECLS
 
 //
 // RIB mgmt 
@@ -169,6 +169,6 @@ rib_obj_t* __rib_get_obj(const rib_handle_t handle,
 
 
 //extern C 
-RIB_END_DECLS
+END_DECLS
 
 #endif // RIB_MGMT_H_ 
