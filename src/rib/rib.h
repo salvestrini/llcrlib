@@ -66,7 +66,7 @@ COMPILATION_ASSERT(RIB_VER_SIZE, ( sizeof(rib_ver_t) == 8 ) );
 
 
 /**
-* Supported RIB versions bitmap
+* Supported RIB versions set 
 */
 typedef struct rib_ver_set{
 	/* Number of versions */
@@ -104,28 +104,28 @@ typedef uint64_t rib_handle_t;
 BEGIN_DECLS
 
 //
-// Version bitmap
+// Version set
 //
 
 /**
-* Initialize supported RIB versions bitmap
+* Initialize supported RIB versions set
 */
-void rib_ver_set_init(rib_ver_set_t* bitmap);
+void rib_ver_set_init(rib_ver_set_t* set);
 
 /**
-* Add version to bitmap 
+* Add version to set 
 */
-void rib_ver_set_add(rib_ver_set_t* bitmap, const rib_ver_t* version); 
+void rib_ver_set_add(rib_ver_set_t* set, const rib_ver_t* version); 
 
 /**
-* Remove version from bitmap 
+* Remove version from set 
 */
-void rib_ver_set_remove(rib_ver_set_t* bitmap, const rib_ver_t* version); 
+void rib_ver_set_remove(rib_ver_set_t* set, const rib_ver_t* version); 
 
 /**
 * Is the version supported
 */
-bool rib_ver_set_is_supported(const rib_ver_set_t* bitmap, 
+bool rib_ver_set_is_supported(const rib_ver_set_t* set, 
 					const rib_ver_t* version); 
 
 
