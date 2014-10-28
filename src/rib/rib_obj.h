@@ -162,8 +162,17 @@ typedef struct rib_obj{
 	/* Class type */
 	char class_name[RIB_MAX_CLASS_NAME];
 
-	/* Operations */
+	/* Operation callbacks */
 	rib_obj_ops_t ops;
+
+
+	/* 
+	* @brief Object destructor 
+	*
+	* In the absence of a destructor (NULL), the memory pointed by
+	* data will be freed, as well as the rib object.
+	*/
+	rib_res_t (*destructor)(struct rib_obj* obj);
 
 	// Application specific data
 

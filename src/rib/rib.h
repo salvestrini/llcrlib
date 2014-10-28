@@ -40,12 +40,52 @@ typedef enum rib_res{
 	/* General error */
 	RIB_UNKOWN_ERROR = -1,
 
+	//
+	// Negocation
+	//
+
 	/* There is no supported RIB version that can be understood */	
 	RIB_VER_MISMATCH_ERR = -2,
+
+	//
+	// Schema
+	//
+
+	/* The RIB schema file extension is unknown */
+	RIB_SCHEMA_EXT_ERR = -3,
 	
+	/* Error during RIB scheema file parsing */
+	RIB_SCHEMA_FORMAT_ERR = -4,
 	
+	/* General validation error (unknown) */ 
+	RIB_SCHEMA_VALIDATION_ERR = -5,
+	
+	/* Validation error, missing mandatory object */
+	RIB_SCHEMA_VAL_MAN_ERR = -6,
+
+	//
+	// Invoke IDs
+	//
+	
+	/* Unkown Invoke ID */ 
+	RIB_INVALID_INVOKE_ID_ERR = -7,
+
+	/* Operation associated with the invoke ID has concluded */ 
+	RIB_EXPIRED_INVOKE_ID_ERR = -8,
+
+	//
+	// Misc
+	//	
 	//TODO: Other error codes
 }rib_res_t;
+
+
+/**
+* @brief Get the error description
+*
+* TODO: 
+*/
+const char* rib_strerror(rib_res_t code); 
 
 /**
 * @brief RIB version
@@ -60,7 +100,6 @@ typedef struct rib_ver{
 
 	/* Object value encoder */
 	uint8_t encoding;
-	
 }rib_ver_t;
 COMPILATION_ASSERT(RIB_VER_SIZE, ( sizeof(rib_ver_t) == 8 ) );
 
@@ -95,6 +134,11 @@ typedef enum rib_op{
 * @brief Local RIB handle 
 */
 typedef uint64_t rib_handle_t;
+
+/**
+* @brief RIB handle ANY
+*/
+extern rib_handle_t rib_handle_all;
 
 //
 // Functions

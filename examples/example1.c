@@ -1,5 +1,6 @@
 #include <rib.h>
-#include <rib_mgmt.h>
+#include <rib_local.h>
+#include <rib_remote.h>
 #include <rib_builtin_obj.h>
 
 //RIB version info
@@ -15,6 +16,8 @@ typedef struct my_struct{
 	uint16_t field2;
 	uint16_t another_field;
 }my_struct_t;
+
+#define CUSTOM_TYPE_CN "custom_cn"
 
 //Static variable for the sake of the example
 static int32_t var1 = 1;
@@ -37,17 +40,17 @@ static rib_res_t my_fancy_write(/* TODO*/){
 
 //My custom type creation callback
 struct rib_obj*
-my_remote_obj_creation(rib_handle_t handle, const char* obj_name, 
+my_remote_obj_creation_cb(rib_handle_t handle, const char* obj_name, 
 					const char* class_name, 
 					const uint32_t invoke_id,
 					const rib_op_payload_t* op_payload){
 
 		
-	assert(strncmp(obj->class_name, "custom_type", 
+	assert(strncmp(obj->class_name, CUSTOM_TYPE_CN, 
 				RIB_MAX_CLASS_NAME) == 0);
 
 	//Create a custom object
-	rib_obj_t* obj = rib_obj_init("custom_obj", "custom_type", &data);
+	rib_obj_t* obj = rib_obj_init("custom_obj", CUSTOM_TYPE_CN, &data);
 	obj->ops.start = my_custom_start;
 	obj->ops.delete = my_custom_delete;
 
@@ -74,7 +77,7 @@ static void setup_aes(){
 	*/
 
 //
-//Create version&RIB
+// Create RIB schema (version)
 //
 	rib_ver_t version;
 	version.model = RIB_MODEL;
@@ -82,20 +85,95 @@ static void setup_aes(){
 	version.minor_version = RIB_MIN_VERSION;
 	version.encoding = RIB_ENCODING;
 	version.reserved = 0x0;
-		
+
+	// Now create an empty schema	
+	if( rib_schema_create(version) != RIB_SUCCESS )
+		exit(-1);	
+	//
+	// Now register the different types to the schema
+	//
+	
+	// int32_t in the root and with a fixed name (obj1)
+	assert(rib_schema_def_type(version, RIB_INT32_T) == RIB_SUCCESS);
+	assert(rib_schema_def_type_cont_rel(version, RIB_ROOT_CN, RIB_ROOT
+						RIB_INT32_T,	
+						"obj1",
+						false,
+						1) == RIB_SUCCESS);
+
+	// int32_t pointer type (more details beloew)
+	// in the root and with a fixed name (obj2)	
+	assert(rib_schema_def_type(version, RIB_INT32P_T) == RIB_SUCCESS);
+	assert(rib_schema_def_type_cont_rel(version, RIB_ROOT_CN, RIB_ROOT,
+						RIB_INT32P_T,	
+						"obj2",
+						false,
+						1) == RIB_SUCCESS);
+	
+	//int32p_t in the root and with a fixed name (obj3)
+	//Note, the type has been already register once, there is no need to
+	//re-register
+	assert(rib_schema_def_type_cont_rel(version, RIB_ROOT_CN, RIB_ROOT, 
+							RIB_INT32P_T,	
+							"obj3",
+							false,
+							1) == RIB_SUCCESS);
+	
+	// Create a custom type in the root of the tree
+	// The type will be called "custom_cn" 
+	// in the root and with a fixed name (custom_obj)	
+	assert(rib_schema_def_type(version, RIB_INT32P_T) == RIB_SUCCESS);
+	assert(rib_schema_def_type_cont_rel(version, RIB_ROOT_CN, RIB_ROOT,
+						CUSTOM_TYPE_CN,	
+						"custom_obj",
+						false,
+						1) == RIB_SUCCESS);
+
+	// Register a relation of contention
+	// custom_obj must have an inner object called inner that is an int32_t
+	assert(rib_schema_def_type_cont_rel(version, CUSTOM_TYPE_CN,
+						"custom_obj",
+						RIB_INT32_T,	
+						"inner",
+						true,
+						1) == RIB_SUCCESS);
+
+	// Finally register an undefined number of objects that can be created
+	// in the root of the tree with whatever name (except the ones used by
+	// existing defined types).
+	//
+	// Note that usually one may want to define this type of "unlimited"
+	// number of objects within a container type.
+	assert(rib_schema_def_type(version, RIB_INT8_T) == RIB_SUCCESS);
+	assert(rib_schema_def_type_cont_rel(version, RIB_ROOT_CN, RIB_ROOT,
+						RIB_INT8_T,	
+						NULL, //No name
+						false,
+						RIB_OBJ_COUNT_UNLIMITED) 
+							== RIB_SUCCESS);
+
+
+
+	// All this could be eventually substituted by simply doing something 
+	// like:
+	//rib_schema_import(my_app_rib_schema.json, version);
+
+//
+// Create RIB based on this schema
+//	
 	//Create a RIB
 	rib_handle_t handle;
 	if( rib_create(version, &handle) != RIB_SUCCESS )
 		exit(-1);	
 
 //
-//Add existing objects of the 0x11 odel 0x11
-//as well as register the necessary types for CREATE ops
+// Populate initial objects in the RIB instance and register CREATE 
+// callbacks
 //
 
 
 /*
-* Status of the RIB tree:
+* Status of the RIB instance tree:
 *
 * root 
 *
@@ -110,7 +188,7 @@ static void setup_aes(){
 	assert(obj1 == NULL);
 
 	/*
-	* Status of the RIB tree:
+	* Status of the RIB instance tree:
 	*
 	* root 
 	* └── obj1
@@ -126,7 +204,7 @@ static void setup_aes(){
 	assert(obj2 == NULL);
 	
 	/*
-	* Status of the RIB tree:
+	* Status of the RIB instance tree:
 	*
 	* root 
 	* ├── obj1
@@ -146,7 +224,7 @@ static void setup_aes(){
 	assert(obj3 == NULL);
 
 	/*
-	* Status of the RIB tree:
+	* Status of the RIB instance tree:
 	*
 	* root 
 	* ├── obj1
@@ -155,16 +233,15 @@ static void setup_aes(){
 	*/
 
 	//
-	//Add a completely custom type
-	//The data type will be a struct. We define a class_name "custom_type"
-	//that must be unique in the RIB
+	// Add a completely custom type(using raw rib_obj_init())
+	// The data type will be a struct. 
 	//
 	memset(&custom_data, 0, sizeof(custom_data));
-	rib_obj_t* obj_c = rib_obj_init("custom_obj", "custom_type", &data);
+	rib_obj_t* obj_c = rib_obj_init("custom_obj", CUSTOM_TYPE_CN, &data);
 	
-	//Now set the object operations we want to support
-	//Note that we could specify a common hook for all "custom_type"
-	//objects, or specify a per-object hook. This is up to the application
+	// Set the object operations we want to support
+	// Note that we could specify a common hook for all "custom_type"
+	// objects, or specify a per-object hook. This is up to the application
 	obj_c->ops.start = my_custom_start;
 	obj_c->ops.delete = my_custom_delete;
 
@@ -174,7 +251,7 @@ static void setup_aes(){
 	assert(obj_c == NULL);
 
 	/*
-	* Status of the RIB tree:
+	* Status of the RIB instance tree:
 	*
 	* root 
 	* ├── custom_obj 
@@ -184,57 +261,51 @@ static void setup_aes(){
 	*/
 
 	//
-	//Register a class_name. With the registration of a class_name in a
-	//certain part of the tree, as well as its depth, we can define where
-	//objects of class_name X can be remotely crated by the peer and how
-	//to capture such events
+	// Containment. Creating the mandatory inner object, 
+	// within the custom_obj. Note that not creating this object but 
+	// creating the parent, would result in a validation error.
 	//
-	rib_obj_t* root = rib_get_root(&rib_handle); 
-	if( rib_obj_reg_type(root,
-				1 /* allow creation only in the root level */,
-				"remote_obj_class",
-				RIB_OBJ_COUNT_UNLIMITED, /* No limit */
-				my_remote_obj_creation) != RIB_SUCCESS )
-		exit(-1);
-	
-	/*
-	* Status of the RIB tree:
-	*
-	* root 
-	* ├-- (0..infinite 'remote_obj_class' objects can be created here)
-	* ├── custom_obj 
-	* ├── obj1
-	* ├── obj2
-	* └── obj3
-	*/
-	
-	//
-	//Containment relations. The CDAP spec defins that the class_name,
-	//so the object CDAP type, must uniquely identify the type of the obj-
-	//ect including its inner types
-	//
-	//Creation of inner objects, or registering types to simple objects
-	// (built-in types) such int32_t for instance is STRICTLY forbidden
-	//
-	//rib_obj_t* failed_obj = rib_obj_int32p_init("custom_obj.failed_obj",
-	//							 &var1, NULL);
-	//rib_add_obj(&handle, "level1.obj3", &obj3, NULL) <= This will fail
-	//
-	// However, no one forbidds users to create other types (class_names)
-	// That wrap simple types but allow containment, like 'custom_Type'
-	//
-	
-	//But we can define that custom obj can contain other simple types
 	rib_obj_t* inner = rib_obj_int32_init("custom_obj.inner");
 	if( rib_add_obj(&handle, &inner) != RIB_SUCCESS )
 		exit(-1);
 	assert(inner == NULL);
 
 	/*
-	* Status of the RIB tree:
+	* Status of the RIB instance tree:
 	*
 	* root 
-	* ├-- (0..infinite 'remote_obj_class' objects can be created here)
+ 	* ├── custom_obj 
+	* │   └── inner
+	* ├── obj1
+	* ├── obj2
+	* └── obj3
+	*
+	*/
+	
+	//
+	// Finally, we have defined in the schema that we can have 0..N-1 
+	// objects of class int8_t in the root of the tree. 
+	//
+	// We want to allow the remote peer to create (and destroy) 
+	//
+	// We currenly don't have any of this objects to populate, so there
+	// is no need to make any call rib_add_obj().
+	//
+	// So we only register to capture CREATE events in the root folder for
+	// this type.
+	//
+	if(rib_reg_type_creation_cb(handle, RIB_ROOT, 
+				1 /* depth */,
+				RIB_INT8_T,	
+				my_remote_obj_creation_cb) != RIB_SUCCESS )
+		exit(-1);
+	
+
+	/*
+	* Status of the RIB instance tree:
+	*
+	* root 
+	* ├-- (0..infinite 'int8_t' objects can be created here)
  	* ├── custom_obj 
 	* │   └── inner
 	* ├── obj1
@@ -245,16 +316,15 @@ static void setup_aes(){
 
 	//TODO: evaluate if we want to use relative paths.
 	//
-	//This has implications of whether rib_obj_t initializers should 
-	//define the name as a full path or relative to the parent and leave 
-	//'the placement' in the tree to rib_add_obj().	
+	// This has implications of whether rib_obj_t initializers should 
+	// define the name as a full path or relative to the parent and leave 
+	// 'the placement' in the tree to rib_add_obj().	
 
-	//Registering types within another object works likewise 
 
 //
-//Associate RIB to one (or more) AEs
-//In this example a new AE with default configuration is
-//created and associate to the RIB
+// Associate RIB to one (or more) AEs
+// In this example a new AE with default configuration is
+// created and associate to the RIB
 //
 //
 // Victor Alvarez: suggests to do this association the other way around;
@@ -264,13 +334,13 @@ static void setup_aes(){
 
 	ae_id_t ae_id = AE_NEW;
 	
-	//Note that the second parameter is NULL => no ACLs to be
-	//applied for incomming CDAP connections in this AE
+	// Note that the second parameter is NULL => no ACLs to be
+	// applied for incomming CDAP connections in this AE
 	if( rib_associate_ae(&ae_id, NULL) != RIB_SUCCESS )
 		exit(-1);
 
 
-	//Specific AE example + ACLs
+	// Specific AE example + ACLs
 	/*	
 	ae_id_t ae_id = 1;
 	
@@ -282,27 +352,78 @@ static void setup_aes(){
 		exit(-1);
 	*/
 
-//the library will handle incoming messages and will call
-//the object action hooks
+// the library will handle incoming messages and will call
+// the object action hooks
 //
-//There is no need to explicitely create CDAP I/O threads or anything
-//RIB library will create it/them during rib association time
+// There is no need to explicitely create CDAP I/O threads or anything
+// RIB library will create it/them during rib association time
 
-//At this point incomming CDAP connections can already be stablished
-//against this AE and this RIB in particular 
+// At this point incomming CDAP connections can already be stablished
+// against this AE and this RIB in particular 
 
 }
 
 void perform_remote_ops(void){
 
+	//
+	// It is important to note that at this point, this application
+	// already has the schema loaded (by setup_aes). In a pure client,
+	// the schema should be loaded/constructed prior to issue a connect
+	// (version needs to be known by the library)
+	// 
+
+	rib_ver_set_t supported; 
+	rib_rcon_handle_t* con_handle;
+	rib_ver_t version;
+	rib_obj_t obj1 = RIB_OBJ_INT32_INIT;
+	uint64_t invoke_id;
+
+	/* Set supported versions */
+	version.model = RIB_MODEL;
+	version.major_version = RIB_MAJ_VERSION;
+	version.minor_version = RIB_MIN_VERSION;
+	version.encoding = RIB_ENCODING;
+	version.reserved = 0x0;
+
+
+	rib_ver_set_init(&supported);
+	rib_ver_set_add(&supported, &version); 
+
 	/**
 	* Stablish a simple CDAP connection 
 	*/
-	rib_simple_connect(REMOTE_AP_NAME, NULL);
+	con_handle = rib_simple_connect(REMOTE_AP_NAME, NULL, supported);
+	
+	if(!con_handle)
+		exit(-1);
+
+	//Perform a simple read over an object
+	rib_res_t res = rib_remote_read(con_handle, 
+					"obj1"	
+					NULL,
+					RIB_INT32_T,	
+					/*const uint32_t scope,*/
+					&obj,	
+					&invoke_id);
+
+	if(res < 0)
+		exit(-1);
+
+	if(res == RIB_IN_PROGRESS){
+		//Operation is still not completed block
+		res = rib_remote_op_wait(con_handle, invoke_id);
+	
+		if(res != RIB_SUCCESS) 
+			//Unknown error
+			exit(-1);
+	}
+
+	//Do stuff with obj1...
+	
 }
 
 void wait_remote_perform_ops(){
-
+	//TODO
 }
 
 /*

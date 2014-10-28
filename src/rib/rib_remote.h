@@ -15,7 +15,6 @@
 * @brief Remote Resource Information Base operations
 */
 
-//TODO static initializer
 
 
 //
@@ -113,6 +112,109 @@ rib_res_t rib_remote_close(rib_rcon_handle_t** handle);
 // Remote RIB operations
 //
 
+//TODO: scope
+
+/**
+* @brief Perform a READ operation over an object of the RIB 
+*
+* @param handle Remote connection handle  
+* @param invoke_id On success, the invoke ID will be stored here
+* @param full_name Full name (path) Instance ID used when 'full_name' is NULL.
+* @param class_name Class name of the object 
+* @param inst_id Instance ID used when 'full_name' is NULL.
+* @param obj An empty object of class 'class_name'. On success, the value
+*  will be filled in this object
+*
+* @ret RIB_SUCCESSS or error code.
+*/
+rib_res_t rib_remote_read(const rib_rcon_handle_t* handle, 
+					const char* full_name,
+					uint64_t* inst_id,
+					const char* class_name,
+					/*const uint32_t scope,*/
+					rib_obj_t* obj,	
+					uint64_t* invoke_id);
+
+/**
+* @brief Perform a WRITE operation over an object of the RIB 
+*
+* TODO
+*/
+rib_res_t rib_remote_write(/*TODO*/);
+
+
+/**
+* @brief Perform a START operation over an object of the RIB 
+*
+* TODO
+*/
+rib_res_t rib_remote_start(/*TODO*/);
+
+/**
+* @brief Perform a STOP operation over an object of the RIB 
+*
+* TODO
+*/
+rib_res_t rib_remote_stop(/*TODO*/);
+
+/**
+* @brief Perform a CREATE operation over an object of the RIB 
+*
+* TODO
+*/
+rib_res_t rib_remote_create(/*TODO*/);
+
+/**
+* @brief Perform a DELETE operation over an object of the RIB 
+*
+* TODO
+*/
+rib_res_t rib_remote_delete(/*TODO*/);
+
+//
+// Pending operations mgmt
+//
+
+/**
+* @brief Retrieves the current status of an operation 
+*
+* This call is strictly NON blocking. 
+*
+* @param handle Remote connection handle  
+* @param invoke_id Invoke ID 
+*
+* @ret RIB_IN_PROGRESS if still not completed, RIB_SUCCESS or error code 
+*   otherwise.
+*/
+rib_res_t rib_remote_op_status(const rib_rcon_handle_t* handle, 
+						const uint64_t invoke_id);
+
+
+/**
+* @brief Waits until an operation has conclued
+*
+* This call is blocking. 
+*
+* @param handle Remote connection handle  
+* @param invoke_id Invoke ID 
+*
+* @ret RIB_SUCCESSS or error code.
+*/
+rib_res_t rib_remote_op_wait(const rib_rcon_handle_t* handle, 
+						const uint64_t invoke_id);
+
+//TODO: set callback
+
+/**
+* @brief Cancels a previously issued operation 
+*
+* @param handle Remote connection handle  
+* @param invoke_id Invoke ID 
+*
+* @ret RIB_SUCCESSS or error code.
+*/
+rib_res_t rib_remote_op_cancel(const rib_rcon_handle_t* handle, 
+						const uint64_t invoke_id);
 
 
 

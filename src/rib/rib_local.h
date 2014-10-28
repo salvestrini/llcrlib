@@ -1,14 +1,16 @@
 //TODO: add license
 
-#ifndef RIB_MGMT_H
-#define RIB_MGMT_H 
+#ifndef RIB_LOCAL_H
+#define RIB_LOCAL_H 
 
 #include <inttypes.h>
 #include <stdbool.h>
+#include "rib.h" 
+#include "rib_schema.h" 
 #include "rib_obj.h" 
 
 /**
-* @file rib_mgmt.h
+* @file rib_local.h
 * @author Marc Sune<marc.sune (at) bisdn.de>
 *
 * @brief Local Resource Information Base(RIB) management
@@ -29,13 +31,13 @@ typedef struct rib{
 	/* Application entities exposing this RIB */ 
 	cdap_ae_handle_t aes[RIB_MAX_AES];
 
-	/* RIB version */
-	rib_ver_t version;
+	/* RIB version and schema */
+	rib_schema_t schema;
 
 	//TODO: hash table for obj names
 	//TODO: hash table for obj class
 }rib_t;
-COMPILATION_ASSERT(RIB_SIZE, ( sizeof(rib_ver_t) == 8 ) );
+//COMPILATION_ASSERT(RIB_SIZE, ( sizeof(rib_ver_t) == 8 ) );
 
 
 //
@@ -63,8 +65,6 @@ rib_res_t rib_create(const rib_ver_t version, rib_handle_t* handle);
 /**
 * @brief Destroy a RIB 
 *
-* Create an empty RIB.
-*
 * @param version RIB version
 * @param handle On success the handle will be stored here
 */
@@ -76,10 +76,10 @@ rib_res_t rib_destroy(const rib_handle_t handle);
 //
 
 /**
-* @brief Register an object type to be (remotely) created in a certain path
+* @brief Register a callback to capture remote object creation
 *
-* Registers a class_name (type) in the RIB, for a certain path or a certain 
-* depth in the tree. During creation the callback will be called.
+* Registers a callback associated with a class_name (type) in the RIB, to 
+* capture object CREATE events.
 *
 * @param handle RIB handle
 * @param full_name RIB path where objects of type 'class_name' can be created
@@ -89,11 +89,10 @@ rib_res_t rib_destroy(const rib_handle_t handle);
 * @param cb Callback for remote CREATE operations of type 'type' in the path 
 *           and depth specified
 */
-rib_res_t rib_reg_type(const rib_handle_t handle, 
+rib_res_t rib_reg_type_creation_cb(const rib_handle_t handle, 
 				const char* path, 
 				const unsigned int depth,
 				const char* class_name,
-				const unsigned max_objs,
 				const rib_obj_type_create_callback_t cb);
 
 /**
@@ -150,13 +149,25 @@ rib_res_t __rib_rem_obj_by_inst(const rib_handle_t handle,
 * @param op_payload On SUCCESS the op_payload should contain the encoded
 *  operation payload
 */
-void rib_operation_completed(const rib_handle_t handle, uint32_t invoke_id,
+void rib_complete_operation(const rib_handle_t handle, uint32_t invoke_id,
 					rib_res_t result, 
 					const rib_op_payload_t* op_payload);
 
 //
 // Other
 //
+
+/**
+* @brief Set interceptor module for the RIB.
+*
+* Set a software module that will intercept the RIB remote operations before
+* any callback is sent. The interceptor module must conform the API.
+*
+* @param handle RIB handle or rib_handle_all to intercept ALL RIBs. 
+* @param interceptor Set or NULL to  
+*/
+void rib_set_interceptor(const rib_handle_t handle,
+				/*TODO*/const rib_interceptor_t* interceptor);
 
 /**
 * Inner API: shall not be used
@@ -171,4 +182,4 @@ rib_obj_t* __rib_get_obj(const rib_handle_t handle,
 //extern C 
 END_DECLS
 
-#endif // RIB_MGMT_H_ 
+#endif // RIB_LOCAL_H_ 
