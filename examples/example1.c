@@ -332,25 +332,17 @@ static void setup_aes(){
 // lib, so leaving it like this for the moment. 
 //
 
-	ae_id_t ae_id = AE_NEW;
-	
-	// Note that the second parameter is NULL => no ACLs to be
-	// applied for incomming CDAP connections in this AE
-	if( rib_associate_ae(&ae_id, NULL) != RIB_SUCCESS )
+	// Associate the RIB to an AE. This API may also create
+	// an AE with a certain name if required or could require the AE
+	// to already exist, which would mean that the AEs need to be 
+	// explicitely be created beforehand
+	// TBD 
+	if( rib_associate_ae(/* TODO */) != RIB_SUCCESS )
 		exit(-1);
 
 
-	// Specific AE example + ACLs
-	/*	
-	ae_id_t ae_id = 1;
-	
-	//ACLs
-	ae_conn_acl_t* acl = XXX; //Initialize 
-	//TODO: configure ACL
-
-	if( rib_associate_ae(&ae_id, &ae_acl) != RIB_SUCCESS )
-		exit(-1);
-	*/
+	// ACLs would be used using the interceptor 
+	// TODO
 
 // the library will handle incoming messages and will call
 // the object action hooks
