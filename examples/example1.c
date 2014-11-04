@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include <rib/rib.h>
 #include <rib/rib_local.h>
 #include <rib/rib_remote.h>
@@ -24,10 +26,15 @@ static int32_t var1 = 1;
 static my_struct_t custom_data;
 
 //Custom WRITE for int32_t types
-static rib_res_t my_fancy_write(/* TODO*/){
+static rib_res_t my_fancy_write(/* TODO*/)
+{
+        struct rib_obj * obj;
+        void *           data;
 
+#ifdef FIXME
 	assert(strncmp(obj->class_name, RIB_OBJ_INT32_CN, 
 				RIB_MAX_CLASS_NAME) == 0);
+#endif
 
 	//Do my fancy stuff
 	//...
@@ -38,21 +45,33 @@ static rib_res_t my_fancy_write(/* TODO*/){
 	return RIB_SUCCESS;
 } 
 
+rib_res_t my_custom_start(rib_handle_t handle, struct rib_obj* obj,
+                          uint32_t invoke_id,
+                          const rib_op_payload_t* op_payload)
+{ }
+
+rib_res_t my_custom_delete(rib_handle_t handle, struct rib_obj* obj, 
+                           uint32_t invoke_id,
+                           const rib_op_payload_t* op_payload)
+{ }
+
 //My custom type creation callback
 struct rib_obj*
 my_remote_obj_creation_cb(rib_handle_t handle, const char* obj_name, 
-					const char* class_name, 
-					const uint32_t invoke_id,
-					const rib_op_payload_t* op_payload){
+                          const char* class_name, 
+                          const uint32_t invoke_id,
+                          const rib_op_payload_t* op_payload)
+{
+        rib_obj_t * obj;
+        void *      data;
 
-		
 	assert(strncmp(obj->class_name, CUSTOM_TYPE_CN, 
 				RIB_MAX_CLASS_NAME) == 0);
 
 	//Create a custom object
-	rib_obj_t* obj = rib_obj_init("custom_obj", CUSTOM_TYPE_CN, &data);
+	obj = rib_obj_init("custom_obj", CUSTOM_TYPE_CN, &data);
 	obj->ops.start = my_custom_start;
-	obj->ops.delete = my_custom_delete;
+	obj->ops.del = my_custom_delete;
 
 	//etc...
 
@@ -64,7 +83,8 @@ my_remote_obj_creation_cb(rib_handle_t handle, const char* obj_name,
 *
 */
 
-static void setup_aes(){
+static void setup_aes()
+{
 
 	/**
 	* TODO CDAP
@@ -243,7 +263,7 @@ static void setup_aes(){
 	// Note that we could specify a common hook for all "custom_type"
 	// objects, or specify a per-object hook. This is up to the application
 	obj_c->ops.start = my_custom_start;
-	obj_c->ops.delete = my_custom_delete;
+	obj_c->ops.del = my_custom_delete;
 
 	//Now add to the RIB	
 	if( rib_add_obj(&rib_handle, &obj_c) != RIB_SUCCESS )

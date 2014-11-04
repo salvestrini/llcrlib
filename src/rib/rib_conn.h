@@ -39,6 +39,8 @@ typedef enum rib_rcon_flags{
 	RIB_RCON_ESTABLISHED,
 }rib_rcon_flags_t;
 
+typedef struct { int empty_for_the_moment; } cdap_rcon_handle_t;
+
 /**
 * @brief Remote RIB handle 
 */
@@ -73,14 +75,14 @@ BEGIN_DECLS
 * Can only be used with RIB_RCON_NONBLOCK_OPEN
 * TODO
 */
-rib_res_t rib_remote_set_open_cb(const rib_rcon_handle_t* handle, /*TODO*/);
+rib_res_t rib_remote_set_open_cb(const rib_rcon_handle_t* handle /* TODO */);
 
 /**
 * @brief Set callback for connection close 
 *
 * TODO
 */
-rib_res_t rib_remote_set_close_cb(const rib_rcon_handle_t* handle,/* TODO */);
+rib_res_t rib_remote_set_close_cb(const rib_rcon_handle_t* handle /* TODO */);
 
 //extern C 
 END_DECLS

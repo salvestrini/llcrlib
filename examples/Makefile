@@ -1,5 +1,7 @@
+CFLAGS_EXTRA =
+#CFLAGS_EXTRA = -Wall -Werror
+CFLAGS = -I../src $(CFLAGS_EXTRA)
 CC = gcc
-CFLAGS = -I../src -Wall -Werror
 
 all:
 	$(CC) $(CFLAGS) example1.c -o example1

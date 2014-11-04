@@ -158,6 +158,8 @@ void rib_complete_operation(const rib_handle_t handle, uint32_t invoke_id,
 // Other
 //
 
+typedef struct { int empty_for_the_moment; } rib_interceptor_t;
+
 /**
 * @brief Set interceptor module for the RIB.
 *
