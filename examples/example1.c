@@ -1,7 +1,7 @@
-#include <rib.h>
-#include <rib_local.h>
-#include <rib_remote.h>
-#include <rib_builtin_obj.h>
+#include <rib/rib.h>
+#include <rib/rib_local.h>
+#include <rib/rib_remote.h>
+#include <rib/rib_builtin_obj.h>
 
 //RIB version info
 #define RIB_MODEL 0x11
