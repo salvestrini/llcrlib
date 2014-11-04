@@ -7,5 +7,5 @@ all:
 
 clean:
 	for i in $(SUBDIRS) ; do		\
-		(cd $ii && $(MAKE) clean)	\
+		(cd $$i && $(MAKE) clean)	\
 	done
