@@ -10,11 +10,10 @@ wrap-python:
 	$(SWIG) $(SFLAGS) -python rib/rib.i
 
 clean-java:
-	rm -f rib/rib.java
-	rm -f rib/ribJNI.java
-	rm -f rib/rib_wrap.c
+	rm -f rib/*.java
 
 clean-python:
-	rm -f rib/rib.py
+	rm -f rib/*.py
 
 clean: clean-java clean-python
+	rm -f rib/rib_wrap.c

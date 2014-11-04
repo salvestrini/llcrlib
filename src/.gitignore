@@ -1,4 +1,3 @@
-/rib/rib.java
-/rib/rib.py
-/rib/ribJNI.java
+/rib/*.java
+/rib/*.py
 /rib/rib_wrap.c
