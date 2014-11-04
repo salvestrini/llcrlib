@@ -5,9 +5,10 @@
 
 #include <inttypes.h>
 #include <stdbool.h>
-#include "rib.h" 
-#include "rib_schema.h" 
-#include "rib_obj.h" 
+
+#include <rib/rib.h>
+#include <rib/rib_schema.h>
+#include <rib/rib_obj.h>
 
 /**
 * @file rib_local.h
