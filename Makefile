@@ -1,4 +1,4 @@
-SUBDIRS = examples
+SUBDIRS = src examples
 
 all:
 	for i in $(SUBDIRS) ; do	\
